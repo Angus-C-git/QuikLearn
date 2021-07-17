@@ -2,15 +2,11 @@ const mongoose = require('mongoose');
 
 // DB Post schema
 const postSchema = new mongoose.Schema({
-    author: {
+    topic: {
         type: String,
         required: true,
-        min: 6,
-        max: 25
-    },
-    message: {
-        type: String,
-        required: true
+        min: 3,
+        max: 255
     },
     date: {
         type: Date,

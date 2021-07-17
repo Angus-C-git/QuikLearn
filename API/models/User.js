@@ -21,13 +21,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         min: 6
     },
-    cracks: {
-      type: Number,
-      default: 0
-    },
-    solvedIDs: {
-      type: Array
-    },
     date: {
         type: Date,
         default: Date.now
