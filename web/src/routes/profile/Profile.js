@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Dashboard(props) {
+export default function Profile(props) {
 	const classes = useStyles();
 	const { token } = props;
 	if (!token)
@@ -22,11 +22,11 @@ export default function Dashboard(props) {
 
 	return (
 		<BrowserRouter>
-            <h1>Dashboard Placeholder</h1>
+            <h1>Profile Placeholder</h1>
 		</BrowserRouter>
 	)
 }
 
-Dashboard.propTypes = {
+Profile.propTypes = {
 	token: PropTypes.string.isRequired
 };

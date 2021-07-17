@@ -2,7 +2,7 @@ import React from 'react';
 import './static/App.css';
 // import NavBar from './components/NavBar';
 import Dashboard from './routes/dash/Dashboard';
-// import Profile from './routes/Profile';
+import Profile from './routes/profile/Profile';
 import Login from './routes/auth/Login';
 import Register from './routes/auth/Register';
 import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
@@ -31,9 +31,9 @@ function App() {
                 <Route exact path="/">
                     <Redirect to="/login" />
                 </Route>
-                {/* <Route path="/profile">
-                    <Profile />
-                </Route> */}
+                <Route path="/profile">
+                    <Profile token={token}/>
+                </Route>
                 <Route path="/login">
                     <Login token={token} setToken={setToken}/>
                 </Route>

@@ -75,12 +75,6 @@ export default function Login(props) {
 	const classes = useStyles();
     const history = useHistory();
 
-	// const [
-	// 	redirectToDash,
-	// 	setRedirectToDash
-	// ] = React.useState(false);
-
-
 	const handleLogin = async (e) => {
 		setError(null); // hide any previous errors
 		e.preventDefault();

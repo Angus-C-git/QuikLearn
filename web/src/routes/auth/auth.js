@@ -1,7 +1,6 @@
 /**
  * API handler for login
  */
-// import React from 'react';
 import axios from "axios";
 
 const BASE_URL = 'http://localhost:8000/api';
@@ -39,5 +38,5 @@ async function DoRegister(usrName, email, password) {
     return res;
 }
 
-export default { DoLogin, DoRegister};
 
+export default { DoLogin, DoRegister};
