@@ -3,3 +3,6 @@
 .vscode/
 
 package-lock.json
+
+# im asleep
+node_modules/
