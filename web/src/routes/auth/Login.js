@@ -1,13 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import { Redirect, useHistory } from 'react-router-dom';
-import { Button, TextField, Typography } from '@material-ui/core';
+import { Button, TextField, Typography, Checkbox } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { makeStyles } from "@material-ui/core/styles";
-
 import loginHero from '../../static/loginHero.jpg';
 
-// import Logo from '../static/logo.svg';
-
+// API handler
+import Auth from './auth';
 
 const useStyles = makeStyles((theme) => ({
 	loginContainer: {
@@ -22,17 +23,15 @@ const useStyles = makeStyles((theme) => ({
 		textAlign: 'left',
 		marginRight: '250px',
 		
-		// marginTop: '5px',
-        // marginBottom: '5px',
-		color: '#dee3ea',
+		color: '#F7F7F7',
 		'& TextField': {
-			color: '#dee3ea',
+			color: '#F7F7F7',
 		},
 		'& label': {
-			color: '#dee3ea',
+			color: '#808191',
 		},
 		'& input': {
-			color: '#dee3ea',
+			color: '#F7F7F7',
 		},
 		'& Button': {
 			backgroundColor: '#3872F0',
@@ -43,8 +42,18 @@ const useStyles = makeStyles((theme) => ({
 	},
 	textField: {
 		marginTop: '10px',
-		marginBottom: '10px'
+		marginBottom: '10px',
+		color: '#F7F7F7'
 	},
+	forgotPass: {
+		marginTop: '10px',
+		float: 'right',
+		
+		'&:hover': {
+			cursor: 'pointer'
+		}
+	},
+
 	title: {
 		marginTop: '8px',
 	},
@@ -58,52 +67,51 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function Login(props) {
+	// budget auth
+	const { token, setToken } = props;
 	const [email, setEmail] = React.useState('');
 	const [password, setPassword] = React.useState('');
 	const [error, setError] = React.useState(undefined);
 	const classes = useStyles();
     const history = useHistory();
 
-	const [
-		redirectToDash,
-		setRedirectToDash
-	] = React.useState(false);
+	// const [
+	// 	redirectToDash,
+	// 	setRedirectToDash
+	// ] = React.useState(false);
 
 
 	const handleLogin = async (e) => {
-
+		setError(null); // hide any previous errors
 		e.preventDefault();
-		try {
-			if (!email || !password) {
-				setError('Text fields cannot be empty!');
+		
+		if (!email || !password) {
+			setError('Fields cannot be empty!');
+			return;
+		}
+		
+		console.log('[>>] Firing request');
+		
+		await Auth.DoLogin(email, password).then((res) => {
+			if (res.status !== 200) {
+				setError('Wrong email or password!');
 				return;
 			}
 
-			// await login({variables: {email: email, password: password}}).then((data) => {
-			// 	const res = data.data.login[0].message;
-			// 	console.log("DATA ::",res);
+			// poor mans auth
+			localStorage.setItem('token', res.data.token);
+			setToken(res.data.token);
 
-			// 	if (res !== 'success') {
-			// 		setError(res);
-			// 		return null;
-			// 	}
+		}).catch(error => {
+			console.error(error);
+			setError('Wrong email or password!');
+		})
 
-			// 	setError(null); // hide any previous errors
-			// 	setRedirectToDash(true);
+	}
 
-			// }).catch((err) => {
-			// 	console.error('[>>] Login failed', err);
-			// 	setError(`Incorrect Credentials`);
-			// });
-
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
-	if (redirectToDash)
+	// authenticated
+	if (token)
 		return <Redirect to="/dashboard" />;
-
 
 	return (
 		<>
@@ -129,7 +137,7 @@ export default function Login(props) {
 						/>
 						<TextField
 							className={classes.textField}
-							color="--primary-text"
+							color="#dee3ea"
 							alt="password field"
 							id="password"
 							label="Password"
@@ -139,6 +147,17 @@ export default function Login(props) {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 						/>
+						
+						<label className={classes.formSubtext}>
+							Remember me 
+							<Checkbox
+								value="checkedA"
+								inputProps={{ 'aria-label': 'Checkbox A' }}
+							/>
+						</label>
+
+						<label className={classes.forgotPass}>Forgot password?</label>
+
 						{error && <Alert severity="error">{error}</Alert>}
 						<Button alt="login-submit" onClick={handleLogin} variant="contained" color="primary" fullWidth>Login Now</Button>
 						
@@ -158,4 +177,6 @@ export default function Login(props) {
 }
 
 Login.propTypes = {
+	token: PropTypes.string.isRequired,
+	setToken: PropTypes.func.isRequired,
 };

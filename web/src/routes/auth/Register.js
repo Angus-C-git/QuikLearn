@@ -1,139 +1,191 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import PropTypes, {string} from 'prop-types';
+
+import { Redirect, useHistory } from 'react-router-dom';
 import { Button, TextField, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { makeStyles } from "@material-ui/core/styles";
+import loginHero from '../../static/loginHero.jpg';
 
-BASE_URL = 'TODO';
+// API handler
+import Auth from './auth';
+
+const useStyles = makeStyles((theme) => ({
+	loginContainer: {
+		display: 'flex',
+		flexFlow: 'column wrap',
+		alignContent: 'flex-start',
+		justifyContent: 'center',
+		height: '100vh',
+	},
+	formFields: {
+		width: '25%',
+		textAlign: 'left',
+		marginRight: '250px',
+		
+		color: '#F7F7F7',
+		'& TextField': {
+			color: '#F7F7F7',
+		},
+		'& label': {
+			color: '#808191',
+		},
+		'& input': {
+			color: '#F7F7F7',
+		},
+		'& Button': {
+			backgroundColor: '#3872F0',
+			color: '#F7F7F7',
+			margin: '10px 0',
+		}
+
+	},
+	textField: {
+		marginTop: '10px',
+		marginBottom: '10px',
+		color: '#F7F7F7'
+	},
+	forgotPass: {
+		marginTop: '10px',
+		float: 'right',
+		
+		'&:hover': {
+			cursor: 'pointer'
+		}
+	},
+
+	title: {
+		marginTop: '8px',
+	},
+	loginHero: {
+		'& img': {
+			height: '100vh',
+			width: '80%'
+		}
+	}
+}));
+
 
 export default function Register(props) {
+  // budget auth
   const { token, setToken } = props;
-  const [email, setEmail] = React.useState('');
-  const [usrName, setName] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
-  const [error, setError] = React.useState('');
+
+	const [usrName, setUsername] = React.useState('');
+	const [email, setEmail] = React.useState('');
+	const [password, setPassword] = React.useState('');
+	const [error, setError] = React.useState(undefined);
+	const classes = useStyles();
   const history = useHistory();
 
-  // Submit all fields: name, email, group, password, course code
-  const submit = async (e) => {
-    e.preventDefault();
-    try {
-      if (!email || !password || !usrName || !courseCode || !group) {
-        setError('Text fields cannot be empty!');
-        return;
-      }
-      if (usrName.length < 4) {
-        setError('Username must be at least 4 characters');
-        return;
-      }
-      if (group.length < 4) {
-        setError('Group must be at least 4 characters');
-        return;
-      }
-      if (password.length < 6) {
-        setError('Password must be at least 6 characters');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setError("Passwords don't match");
-        return;
-      }
-      if (courseCode.length < 6) {
-        setError("Course registration key is incorrect");
-        return;
-      }
-    //   const response = await fetch(`${BASE_URL}/user/register`, {
-    //     body: JSON.stringify({
-    //       email,
-    //       usrName,
-    //       group,
-    //       password,
-    //       courseCode
-    //     }),
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     method: 'POST',
-    //   });
-    //   const responseData = await response.json();
-    //   if (responseData.error) {
-    //     setError(responseData.error);
-    //     return;
-    //   }
-    //   if (response.status === 200) {
-    //     localStorage.setItem('token', responseData.token);
-    //     setToken(responseData.token);
-    //   }
-    } catch (err) {
-        console.log(err);
-    }
-  };
+	const handleRegister = async (e) => {
+    setError(null); // hide any previous errors
+		e.preventDefault();
+		
+		if (!email || !password || !usrName) {
+			setError('Fields cannot be empty!');
+			return;
+		}
 
-  if (token) {
-    return <Redirect to="/dashboard" />;
+    if (usrName.length < 4) {
+      setError('Username must be at least 4 characters');
+      return;
+    }
+    else if (email.length < 5) {
+      setError('Please enter a valid email');
+      return;
+    }
+    else if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    console.log('[>>] Firing request');
+		
+		await Auth.DoRegister(usrName, email, password).then((res) => {
+			//console.log('DATA ::', res.data, res.status);
+			if (res.status !== 200) {
+				setError('Email Already Registered');
+        return;
+      }
+      
+      // stash the token, Poor mans auth
+      localStorage.setItem('token', res.data.token);
+      setToken(res.data.token);
+      
+
+		}).catch(error => {
+			console.error(error);
+			setError('Registration failed');
+		})
+  
   }
 
-  return (
-    <>
-      <div style={{
-        display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', padding: '20px',
-      }}
-      >
-        <form onSubmit={submit}>
-          <Typography data-testid="register-heading" id="register-heading" variant="h5" alt="reg header">Register</Typography>
-          <TextField
-            id="email"
-            name="email"
-            label="Email (used to log you in and reset your password)"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            alt="Email field"
-          
-          />
-          <TextField
-            id="name"
-            name="name"
-            label="Username"
-            fullWidth
-            value={usrName}
-            onChange={(e) => setName(e.target.value)}
-            alt="Name field"
-            
-          />
-          <TextField
-            id="password"
-            name="password"
-            label="Password (minimum 6 characters)"
-            type="password"
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            alt="Password field"
-            
-          />
-          <TextField
-            id="confirmpass"
-            name="confirmpass"
-            label="Confirm Password"
-            type="password"
-            fullWidth
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            alt="Confirm Password field"
-          />
-          {error && <Alert severity="error">{error}</Alert>}
-          <Button id="register-submit" data-testid="signup-bttn-test" alt="Register now" variant="contained" color="primary" type="submit" fullWidth>Sign Up</Button>
-        </form>
-        <br />
-        <div className="switch-signing-in">
-          Already have an account?
-          <Button onClick={() => history.push('/login')} id="login-redirect-bttn" data-testid="login-redirect-bttn" alt="Redirect to login page" variant="outlined">Log in here</Button>
-        </div>
-      </div>
-    </>
-  );
+  // again poor mans auth
+	if (token)
+		return <Redirect to="/dashboard" />;
+
+
+	return (
+		<>
+			<div className={classes.root}>
+				<div className={classes.loginContainer}>
+
+					<div className={classes.loginHero}>
+						<img src={loginHero}></img>
+					</div>
+
+					<div className={classes.formFields}>
+						<Typography variant="h7">Welcome!</Typography>
+						<Typography variant="h4">Enter your details to register</Typography>
+            <TextField
+							className={classes.textField}
+							alt="username field"
+							label="Username"
+							id="username"
+							variant="outlined"
+							fullWidth
+							value={usrName}
+							onChange={(e) => setUsername(e.target.value)}
+						/>
+						<TextField
+							className={classes.textField}
+							alt="email field"
+							label="Email"
+							id="email"
+							variant="outlined"
+							fullWidth
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+						<TextField
+							className={classes.textField}
+							color="#dee3ea"
+							alt="password field"
+							id="password"
+							label="Password"
+							type="password"
+							variant="outlined"
+							fullWidth
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+						/>
+					
+						{error && <Alert severity="error">{error}</Alert>}
+						<Button alt="login-submit" onClick={handleRegister} variant="contained" color="primary" fullWidth>Signup Now</Button>
+						
+						<div className="switch-signing-in">
+							Already have an account? {'    '}
+						</div>
+						<div>
+							<Button alt="register here" id="register-here" onClick={() => history.push('/login')} variant="outlined">Login</Button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			
+		</>
+	);
 }
 
 Register.propTypes = {

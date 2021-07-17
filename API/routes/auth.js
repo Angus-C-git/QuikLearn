@@ -63,7 +63,7 @@ router.post('/register', async (req, res) => {
         const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
         res.header('auth-token', token).send({token: token});
     } catch (err) {
-        res.status(400).send();
+        res.status(400).send('Register failed');
     }
 });
 
@@ -84,11 +84,11 @@ router.post('/login', async (req, res) => {
     try {
         // Check if user already exists
         const userCredentials = await User.findOne({email: req.body.email});
-        if (!userCredentials) return res.status(400).send('Failed to authenticate'); // Don't allow enumeration
+        if (!userCredentials) return res.status(400).json({message: 'Failed to authenticate'}); // Don't allow enumeration
 
          // Validate password
          const validPasswd = bcrypt.compare(req.body.password, userCredentials.password);
-         if (!validPasswd) return res.status(400).send('Failed to authenticate'); // Don't allow enumeration
+         if (!validPasswd) return res.status(400).json({message: 'Failed to authenticate'}); // Don't allow enumeration
 
         // Generate JWT
         const token = jwt.sign({_id: userCredentials._id}, process.env.TOKEN_SECRET);
