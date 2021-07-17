@@ -6,13 +6,28 @@ const lessonSchema = new mongoose.Schema({
         type: String,
         required: true,
         min: 3,
-        max: 255
+        max: 255,
+        default: 'Topic'
+    },
+    title: {
+        type: String,
+        required: true,
+        min: 1,
+        max: 255,
+        default: 'Foo Bar'
+    },
+    description: {
+        type: String,
+        min: 5,
+        max: 800,
+        default: 'This lesson is about ...'
     },
     author: {
         type: String,
         required: true,
         min: 3,
-        max: 255
+        max: 255,
+        default: 'James'
     },
     date: {
         type: Date,
