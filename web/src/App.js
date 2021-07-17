@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import './static/App.css';
+// import NavBar from './components/NavBar';
+// import Dashboard from './routes/Dashboard';
+// import Profile from './routes/Profile';
+import Login from './routes/auth/Login';
+import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
+
+// TODO: auth
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    return (
+        <BrowserRouter>
+            <header>
+                <title>QuikLearn</title>
+            </header>
+            {/*<NavBar />*/}
+            <Switch>
+                <Route exact path="/">
+                    <Redirect to="/login" />
+                </Route>
+                {/* <Route path="/profile">
+                    <Profile />
+                </Route> */}
+                <Route path="/login">
+                    <Login />
+                </Route>
+                {/* <Route path="/dashboard">
+                    <Dashboard />
+                </Route> */}
+            </Switch>
+        </BrowserRouter>
+    );
 }
 
 export default App;
