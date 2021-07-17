@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
 
-// DB Post schema
-const postSchema = new mongoose.Schema({
+// DB lesson schema
+const lessonSchema = new mongoose.Schema({
     topic: {
+        type: String,
+        required: true,
+        min: 3,
+        max: 255
+    },
+    author: {
         type: String,
         required: true,
         min: 3,
@@ -14,4 +20,4 @@ const postSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Post', postSchema);
+module.exports = mongoose.model('Lesson', lessonSchema);

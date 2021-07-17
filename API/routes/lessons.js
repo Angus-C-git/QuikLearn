@@ -1,14 +1,14 @@
 const router = require('express').Router();
 const verify = require('./validateJWT');  // Authenticated route
-const Post = require('../models/Post');   // Post model
+const Lesson = require('../models/Lesson');
 
 
 /**
- * Fetch all shared posts ...
+ * Fetch all lessons
  * */
 router.get('/', verify, async (req, res) => {
     try {
-        const posts = await Post.find();
+        const posts = await Lesson.find();
         res.status(200).json(posts);
     } catch (err) {
         res.status(503).json({error: err});
@@ -17,17 +17,18 @@ router.get('/', verify, async (req, res) => {
 
 
 /**
- * Share a post ...
+ * Share a lesson ...
  * */
 router.post('/', verify, async (req, res) => {
-    const post = new Post({
+    const lesson = new Lesson({
         author: req.body.author,
-        postContents: req.body.postContents
+        topic: req.body.topic
+        /*TODO*/
     });
 
     try {
-        const savedPost = await post.save();
-        res.status(200).json(savedPost);
+        const savedLesson = await lesson.save();
+        res.status(200).json(savedLesson);
     } catch (err) {
         res.status(503).json({error: err});
     }

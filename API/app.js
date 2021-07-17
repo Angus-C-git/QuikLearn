@@ -27,14 +27,14 @@ app.use(cors());
 const authRoute = require('./routes/auth');
 
 // Example posts route
-const posts = require('./routes/posts');
+const lessons = require('./routes/lessons');
 
 /**
  * <---------------------> ROUTE MIDDLEWARES <---------------------->
  * */
 
 app.use('/api/user', authRoute);
-app.use('/api/posts', posts);
+app.use('/api/lessons', lessons);
 
 
 // API Base Endpoint

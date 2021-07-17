@@ -14,8 +14,6 @@ const registerSchema = Joi.object ({
         .min(6)
         .required()
         .email(),
-    courseCode: Joi.string()
-        .required(),
     password: Joi.string()
         .min(6)
         .required()
@@ -77,23 +75,33 @@ router.post('/login', async (req, res) => {
     // Validate request body to save resources =>
     const {error} = loginSchema.validate(req.body);
 
-    // Check if user already exists
-    const userCredentials = await User.findOne({email: req.body.email});
-    if (!userCredentials) return res.status(400).send('Failed to authenticate'); // Don't allow enumeration
-
-    // Validate password
-    const validPasswd = await bcrypt.compare(req.body.password, userCredentials.password);
-    if (!validPasswd) return res.status(400).send('Failed to authenticate'); // Don't allow enumeration
-
     if (error) {
         let err = error.details[0].message;
         console.log("ERROR:", err);
         return res.status(400).send(err);
     }
 
-    // Generate JWT
-    const token = jwt.sign({_id: userCreds._id}, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send({token: token});
+    try {
+        // Check if user already exists
+        const userCredentials = await User.findOne({email: req.body.email});
+        if (!userCredentials) return res.status(400).send('Failed to authenticate'); // Don't allow enumeration
+
+         // Validate password
+         const validPasswd = bcrypt.compare(req.body.password, userCredentials.password);
+         if (!validPasswd) return res.status(400).send('Failed to authenticate'); // Don't allow enumeration
+
+        // Generate JWT
+        const token = jwt.sign({_id: userCredentials._id}, process.env.TOKEN_SECRET);
+        res.header('auth-token', token).send({token: token});
+
+    } catch (error) {
+        // let err = error.details[0].message;
+        console.log("ERROR:", error);
+        return res.status(400).send(error);
+    }
+
+
+
 });
 
 module.exports = router;
