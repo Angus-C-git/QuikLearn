@@ -7,6 +7,10 @@ import Login from './routes/auth/Login';
 import Register from './routes/auth/Register';
 import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
 
+
+//tmp
+// import HomePage from './routes/dash/CHomePage';
+
 // TODO: auth
 
 function App() {
@@ -43,6 +47,9 @@ function App() {
                 <Route path="/dashboard">
                     <Dashboard token={token} />
                 </Route>
+                {/* <Route path="/dashboard">
+                    <HomePage token={token} />
+                </Route> */}
             </Switch>
         </BrowserRouter>
     );
